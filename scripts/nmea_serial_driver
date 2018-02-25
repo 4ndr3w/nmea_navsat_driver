@@ -47,6 +47,12 @@ if __name__ == '__main__':
 
     try:
         GPS = serial.Serial(port=serial_port, baudrate=serial_baud, timeout=2)
+        serial_port.write("$PMTK251,115200*2C\r\n")
+        sleep(1)
+        serial_port.write("$PMTK220,100*2F\r\n")
+        sleep(1)
+        serial_port.write("$PMTK314,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*2C\r\n")
+        sleep(1)
         driver = libnmea_navsat_driver.driver.RosNMEADriver()
         while not rospy.is_shutdown():
             data = GPS.readline().strip()
