@@ -33,7 +33,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import serial
-
+from time import sleep
 import rospy
 
 import libnmea_navsat_driver.driver
@@ -47,11 +47,16 @@ if __name__ == '__main__':
 
     try:
         GPS = serial.Serial(port=serial_port, baudrate=serial_baud, timeout=2)
-        serial_port.write("$PMTK251,115200*2C\r\n")
+        GPS.write("$PMTK251,115200*1F\r\n")
         sleep(1)
-        serial_port.write("$PMTK220,100*2F\r\n")
+        GPS.flush()
+        GPS.close()
         sleep(1)
-        serial_port.write("$PMTK314,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*2C\r\n")
+        GPS = serial.Serial(port=serial_port, baudrate=115200, timeout=2)
+        sleep(1)
+        GPS.write("$PMTK220,100*2F\r\n")
+        sleep(1)
+        GPS.write("$PMTK314,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*2C\r\n")
         sleep(1)
         driver = libnmea_navsat_driver.driver.RosNMEADriver()
         while not rospy.is_shutdown():
@@ -63,3 +68,4 @@ if __name__ == '__main__':
 
     except rospy.ROSInterruptException:
         GPS.close() #Close GPS serial port
+
